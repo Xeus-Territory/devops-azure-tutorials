@@ -1,0 +1,81 @@
+trigger: none
+  
+variables:
+  branch: $(Build.SourceBranchName)
+  commit: $(Build.SourceVersion)
+
+pool:
+  name: linuxAgent
+  
+stages:
+  - stage: install_docker
+    displayName: Install Docker
+    condition: or(contains(variables['Build.SourceBranch'], 'refs/heads/feature/'), eq(variables['Build.SourceBranch'], 'refs/heads/development')) 
+    jobs:
+      - job: install_docker
+        displayName: Install Docker
+        steps:
+          - task: CmdLine@2
+            displayName: Install Docker
+            inputs: 
+              script: |
+                sudo apt install docker-compose -y 
+                sudo docker --version 
+
+      - job: authentication
+        displayName: Authentication
+        steps:
+          - task: CmdLine@2
+            displayName: Authentication
+            inputs: 
+              script: |
+                az login --identity
+                az acr login --name devopsorient
+                sudo chmod 666 /var/run/docker.sock
+
+  - stage: build_and_push
+    displayName: Build and Push Image
+    dependsOn: ['install_docker']
+    condition: succeeded('install_docker')
+    jobs:
+      - job: build_and_push
+        displayName: Build and Push Image 
+        steps:
+          - task: CmdLine@2
+            displayName: Build Image
+            inputs:
+              script: |
+                cp -r src $(workingDirectory) || exit
+                cd $(workingDirectory) || exit
+                sudo docker rmi $(sudo docker image ls | grep devopsorient | awk {'print$3'})
+                sudo docker build -t $(urlRegistry)/$(appName)/$(branch):$(commit) -f Dockerfile.web .
+
+          - task: CmdLine@2
+            displayName: Push Image 
+            inputs:
+              script: |
+                sudo docker image ls 
+                sudo docker push $(urlRegistry)/$(appName)/$(branch):$(commit)
+
+  - stage: update_image
+    displayName: Update Image
+    dependsOn: ['build_and_push']
+    condition: succeeded('build_and_push')
+    jobs:
+      - job: apply_new_image
+        displayName: Update Image
+        steps:     
+          - task: Kubernetes@1
+            displayName: Apply new image
+            inputs:
+              connectionType: Azure Resource Manager
+              azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+              azureResourceGroup: $(azureResourceGroup)
+              azureContainerRegistry: $(azureContainerRegistry)
+              kubernetesCluster:  $(kubernetesCluster)
+              namespace: $(namespace)
+              command: 'set'
+              arguments: 'image deployment/$(appDeloyment) $(appContainer)=$(urlRegistry)/$(appName)/$(branch):$(commit)'
+
+
+

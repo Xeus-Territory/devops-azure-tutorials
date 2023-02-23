@@ -1,0 +1,53 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - "feature/*"
+      - "develop"
+
+pool:
+  name: linuxAgent
+
+variables:
+  commit: $(Build.SourceVersion)
+  branchname: $(Build.SourceBranchName) 
+
+stages:
+  - stage: eslint
+    displayName: Test Source Code
+    jobs:
+      - job: install
+        displayName: Install NodeJS && Test Code
+        steps:
+          - task: NodeTool@0
+            displayName: Install NodeJS
+            inputs:
+              versionSpec: '16.15.0'
+          - bash: |
+              cd src/ || exit
+              npm install
+              npm run lint
+            displayName: Test Code
+
+  - stage: docker
+    dependsOn: ['eslint']
+    condition: succeeded('eslint')
+    displayName: Docker Build
+    jobs:
+      - job: install_docker
+        displayName: Install Docker
+        steps:
+          - bash: |
+              sudo apt install docker-compose -y
+              docker --version
+      - job: build_image
+        displayName: Build Docker Image
+        dependsOn: ['install_docker']
+        condition: succeeded('install_docker')
+        steps:
+          - bash: |
+              cp -r src $(workingDirectory) || exit
+              cd $(workingDirectory) || exit
+              sudo docker build -t $(urlRegistry)/$(appName)/$(branchname):$(commit) -f Dockerfile.web .
+              sudo docker image list
