@@ -9,7 +9,7 @@ resource "helm_release" "rbac" {
     namespace = kubernetes_namespace.deployment.metadata[0].name
     chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/rbac/"
     depends_on = [
-      helm_release.secret
+      kubernetes_namespace.deployment
     ]
 }
 

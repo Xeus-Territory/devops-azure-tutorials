@@ -53,7 +53,7 @@ stages:
               TF_VAR_container_registry_name: $(containerRegistry)
               TF_VAR_address_space: $(addressSpace)
               TF_VAR_address_prefixes: $(addressPrefixes)
-              TF_VAR_storage_account_name: $(storage_account_name)
+              TF_VAR_storage_account_name: $(storageAccount)
 
   - stage: terraform_destroy
     dependsOn: [terraform_plan]
@@ -103,4 +103,4 @@ stages:
                     TF_VAR_container_registry_name: $(containerRegistry)
                     TF_VAR_address_space: $(addressSpace)
                     TF_VAR_address_prefixes: $(addressPrefixes)
-                    TF_VAR_storage_account_name: $(storage_account_name)
+                    TF_VAR_storage_account_name: $(storageAccount)

@@ -10,3 +10,11 @@ module "applications" {
       module.ingress-controller
     ]
 }
+
+module "monitorings" {
+    source = "../../modules/monitoring"
+    metadata-namespace = var.namespace_monitoring
+    depends_on = [
+      module.ingress-controller
+    ]
+}

@@ -19,3 +19,8 @@ variable "namespace_ingress" {
     type = string
     description = "Namespace for k8s common part"
 }
+
+variable "namespace_monitoring" {
+    type = string
+    description = "Monitoring for k8s monitoring part"
+}
