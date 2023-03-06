@@ -35,6 +35,16 @@
 #   description = "Name of Blob inside Container of Storage Account"
 # }
 
+# variable "time_to_keep_object" {
+#   type = number
+#   description = "The days to keep the object in the container"
+# }
+
+# variable "time_to_keep_version_object" {
+#   type = number
+#   description = "The days to keep the version of the object in the container"
+# }
+
 variable "storage_account_name" {
   type = string 
   description = "Name of Storage Account"
