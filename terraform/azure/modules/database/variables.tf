@@ -36,3 +36,19 @@ variable "environment" {
   type = string
   description = "Environment of Resource Group"
 }
+
+variable "email_alert" {
+  type = string
+  description = "Email using for alert thread of Database"
+}
+
+variable "overide_special" {
+  type = string
+  description = "Special character used"
+}
+
+variable "allowed_ips" {
+  type        = string
+  description = "The ip allow access storage blob"
+  sensitive   = true
+}
