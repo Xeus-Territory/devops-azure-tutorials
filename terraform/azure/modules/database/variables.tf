@@ -22,14 +22,10 @@ variable "length_of_password" {
     description = "length of the password"
 }
 
-variable "resource_group_name" {
-  type        = string
-  description = "Resource group name of Dev Environment"
-}
-
 variable "resource_group_location" {
   type        = string
   description = "Resource group location of Dev Environment"
+  default = "eastasia"
 }
 
 variable "environment" {

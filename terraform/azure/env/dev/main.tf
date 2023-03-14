@@ -1,11 +1,14 @@
-# Move the azure for new resource
+# # Move the azure for new resource 
 resource "azurerm_resource_group" "main" {
   name        = var.resource_group_name
   location    = var.resource_group_location
   tags        = var.tags
 }
 
+# # This part is once of release v0.0.2
+
 module "network" {
+  count = var.condition_variable == "aks" ? 1 : 0
   source = "../../modules/networking"
   resource_group_name = azurerm_resource_group.main.name
   resource_group_location = azurerm_resource_group.main.location
@@ -16,11 +19,12 @@ module "network" {
 }
 
 module "aks" {
+    count = var.condition_variable == "aks" ? 1 : 0
     source = "../../modules/aks"    
     resource_group_name                     = azurerm_resource_group.main.name
     resource_group_location                 = azurerm_resource_group.main.location    
     environment                             = var.environment
-    subnet_node_pools_id = module.network.subnet_id
+    subnet_node_pools_id = module.network[0] != null ? module.network[0].subnet_id : ""
     tags                                    = var.tags
     depends_on = [
       module.network
@@ -28,21 +32,58 @@ module "aks" {
 }
 
 module "iam" {
+    count = var.condition_variable == "aks" ? 1 : 0
     source = "../../modules/iam"
     resource_group_root_id = data.azurerm_resource_group.root.id
     container_registry_id = data.azurerm_container_registry.main.id
     storage_account_id = data.azurerm_storage_account.main.id 
-    principal_id = module.aks.principal_id
-    cluster_id  = module.aks.cluster_id
+    principal_id = module.network != null ? module.aks[0].principal_id : ""
+    cluster_id  = module.network != null ? module.aks[0].cluster_id : ""
     depends_on = [
       module.aks
     ]
 }
 
 module "storage" {
+  count = var.condition_variable == "aks" ? 1 : 0
   source = "../../modules/storageAccount"
   storage_account_name = data.azurerm_storage_account.main.name
+  depends_on = [
+    module.aks
+  ]
 }
+
+module "database" {
+  count = ((var.condition_variable != "serverless") && (var.condition_variable != "aks")) ? 1 : 0
+  source = "../../modules/database"
+  environment = var.environment
+  email_alert = var.email_alert
+  number_of_uppercase_characters = var.number_of_uppercase_characters
+  number_of_special_characters = var.number_of_special_characters
+  length_of_username = var.length_of_username
+  length_of_password = var.length_of_password
+  overide_special = var.overide_special
+  allowed_ips = var.allowed_ips
+}
+
+module "serverless" {
+  count = var.condition_variable == "serverless" ? 1 : 0
+  source = "../../modules/serverless"
+  environment = var.environment
+  resource_group_name = var.resource_group_name
+  location_of_resource = var.resource_group_location
+  type_plan = "Linux"
+  sku_name = "Y1"
+  storage_account_name = var.storage_account_name
+  sa_access_key = data.azurerm_storage_account.main.primary_access_key
+  depends_on = [
+    azurerm_resource_group.main
+  ]
+}
+
+# # This part is once of release v0.0.2
+
+# # This part is once of release v0.0.1
 
 # module "iam" {
 #     source                  = "../modules/iam"
@@ -111,3 +152,5 @@ module "storage" {
 #         module.storage
 #     ]
 # }
+
+# # This part is once of release v0.0.1

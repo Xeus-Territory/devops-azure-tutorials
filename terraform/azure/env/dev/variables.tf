@@ -48,8 +48,40 @@ variable "resource_group_name" {
   type = string
   description = "Resource group name of Dev Environment"
 }
+variable "allowed_ips" {
+    type = string
+    description = "Name of Blob inside a Container of Storage Account and Database"
+    sensitive = true
+}
 
+variable "condition_variable" {
+    type = string
+    description = "Condition Variable"
+}
 
+variable "number_of_uppercase_characters" {
+    type = number
+}
+
+variable "number_of_special_characters" {
+    type = number
+}
+
+variable "length_of_username" {
+    type = number
+}
+
+variable "length_of_password" {
+    type = number
+}
+
+variable "overide_special" {
+    type = string
+}
+
+variable "email_alert" {
+    type = string
+}
 
 # variable "source_image_name" {
 #     type = string
@@ -66,10 +98,5 @@ variable "resource_group_name" {
 #     default = "docker-compose.yaml"
 # }
 
-# variable "allowed_ips" {
-#     type = string
-#     description = "Name of Blob inside a Container of Storage Account"
-#     sensitive = true
-# }
 
 

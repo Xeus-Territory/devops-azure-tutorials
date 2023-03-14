@@ -20,11 +20,17 @@ resource "random_string" "password" {
   }
 }
 
-resource "azurerm_resource_group" "main" {
-  name = "DatabaseZone"
-  location = "eastasia"
+resource "random_integer" "random" {
+  min = 100000
+  max = 999999
 }
 
+resource "azurerm_resource_group" "main" {
+  name = "${var.environment}-DatabaseZone"
+  location = var.resource_group_location
+}
+
+# Network of database 
 resource "azurerm_virtual_network" "main" {
   name = "${var.environment}-vpc"
   location = azurerm_resource_group.main.location
@@ -32,7 +38,7 @@ resource "azurerm_virtual_network" "main" {
   address_space = [ "172.16.0.0/16" ]
 }
 
-resource "azurerm_subnet" "main" {
+resource "azurerm_subnet" "db_subnet" {
   name = "${var.environment}-subnet"
   virtual_network_name = azurerm_virtual_network.main.name
   resource_group_name = azurerm_resource_group.main.name
@@ -111,7 +117,7 @@ resource "azurerm_subnet" "main" {
 
 # Provision CosmoDB - MongoDB type
 resource "azurerm_cosmosdb_account" "main" {
-    name = "${var.environment}-cosmosdb-182313"
+    name = "${var.environment}-cosmosdb-${random_integer.random.result}"
     location = azurerm_resource_group.main.location
     resource_group_name = azurerm_resource_group.main.name
     offer_type = "Standard"
@@ -135,7 +141,7 @@ resource "azurerm_cosmosdb_account" "main" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "main" {
-  name = "${var.environment}-cosmosdb-database-1253123"
+  name = "${var.environment}-cosmosdb-database-${random_integer.random.result}"
   resource_group_name = azurerm_resource_group.main.name
   account_name = azurerm_cosmosdb_account.main.name
   autoscale_settings {
@@ -144,7 +150,7 @@ resource "azurerm_cosmosdb_sql_database" "main" {
 }
 
 resource "azurerm_cosmosdb_sql_container" "main" {
-  name = "${var.environment}-cosmosdb-container-13451312"
+  name = "${var.environment}-cosmosdb-container-${random_integer.random.result}"
   resource_group_name = azurerm_resource_group.main.name
   account_name = azurerm_cosmosdb_account.main.name
   database_name = azurerm_cosmosdb_sql_database.main.name
