@@ -1,0 +1,31 @@
+{
+    "widget":{
+        "debug": "on",
+        "windows": {
+            "title": "SKW",
+            "name": "main_window",
+            "width": 500,
+            "height": 500
+        }
+    },
+    "Image":[
+        {
+            "src": "Images/Sun.png",
+            "name": "sun1",
+            "hoffset": 250,
+            "woffset": 250
+        },
+        {
+            "src": "Images/Sun2.png",
+            "name": "sun2",
+            "hoffset": 250,
+            "woffset": 250
+        },
+        {
+            "src": "Images/Sun4.png",
+            "name": "sun3",
+            "hoffset": 250,
+            "woffset": 230
+        }
+    ]
+}

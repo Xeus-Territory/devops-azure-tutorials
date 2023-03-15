@@ -1,0 +1,15 @@
+version: "3"
+services:
+  nodejs12-web:
+    build:
+      dockerfile: /home/xeusnguyen/DevOps_OrientTrainningSession/Node_project_hello_v12/Dockerfile
+      context: .
+    ports:
+      - '3000:3000'
+  nodejs14-web:
+    build:
+      dockerfile: /home/xeusnguyen/DevOps_OrientTrainningSession/Node_project_hello_v14/Dockerfile
+      context: .
+    ports:
+      - '3001:3000'
+    
