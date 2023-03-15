@@ -54,6 +54,14 @@ stages:
               TF_VAR_address_space: $(addressSpace)
               TF_VAR_address_prefixes: $(addressPrefixes)
               TF_VAR_storage_account_name: $(storageAccount)
+              TF_VAR_condition_variable: $(conditionVariable)
+              TF_VAR_number_of_uppercase_characters: $(uppercaseCharacters)
+              TF_VAR_number_of_special_characters: $(specialCharacters)
+              TF_VAR_length_of_username: $(lengthofUsername)
+              TF_VAR_length_of_password: $(lengthofPassword)
+              TF_VAR_overide_special: $(overideSpecial)
+              TF_VAR_email_alert: $(emailAlert)
+              TF_VAR_allowed_ips: $(allowedIPs)
 
   - stage: terraform_destroy
     dependsOn: [terraform_plan]
@@ -104,3 +112,11 @@ stages:
                     TF_VAR_address_space: $(addressSpace)
                     TF_VAR_address_prefixes: $(addressPrefixes)
                     TF_VAR_storage_account_name: $(storageAccount)
+                    TF_VAR_condition_variable: $(conditionVariable)
+                    TF_VAR_number_of_uppercase_characters: $(uppercaseCharacters)
+                    TF_VAR_number_of_special_characters: $(specialCharacters)
+                    TF_VAR_length_of_username: $(lengthofUsername)
+                    TF_VAR_length_of_password: $(lengthofPassword)
+                    TF_VAR_overide_special: $(overideSpecial)
+                    TF_VAR_email_alert: $(emailAlert)
+                    TF_VAR_allowed_ips: $(allowedIPs)
