@@ -11,8 +11,8 @@ resource "azurerm_resource_group" "main" {
 module "network" {
   count = var.condition_variable == "aks" ? 1 : 0
   source = "../../modules/networking"
-  resource_group_name = azurerm_resource_group.main.name
-  resource_group_location = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main[0].name
+  resource_group_location = azurerm_resource_group.main[0].location
   environment = var.environment
   tags = var.tags
   address_space = var.address_space
@@ -22,8 +22,8 @@ module "network" {
 module "aks" {
     count = var.condition_variable == "aks" ? 1 : 0
     source = "../../modules/aks"    
-    resource_group_name                     = azurerm_resource_group.main.name
-    resource_group_location                 = azurerm_resource_group.main.location    
+    resource_group_name                     = azurerm_resource_group.main[0].name
+    resource_group_location                 = azurerm_resource_group.main[0].location    
     environment                             = var.environment
     subnet_node_pools_id = module.network[0] != null ? module.network[0].subnet_id : ""
     tags                                    = var.tags
@@ -71,8 +71,8 @@ module "serverless" {
   count = var.condition_variable == "serverless" ? 1 : 0
   source = "../../modules/serverless"
   environment = var.environment
-  resource_group_name = var.resource_group_name
-  location_of_resource = var.resource_group_location
+  resource_group_name = azurerm_resource_group.main[0].name
+  location_of_resource = azurerm_resource_group.main[0].location
   type_plan = "Linux"
   sku_name = "Y1"
   storage_account_name = var.storage_account_name
