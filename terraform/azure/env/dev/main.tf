@@ -37,8 +37,8 @@ module "iam" {
     resource_group_root_id = data.azurerm_resource_group.root.id
     container_registry_id = data.azurerm_container_registry.main.id
     storage_account_id = data.azurerm_storage_account.main.id 
-    principal_id = module.network != null ? module.aks[0].principal_id : ""
-    cluster_id  = module.network != null ? module.aks[0].cluster_id : ""
+    principal_id = module.aks[0] != null ? module.aks[0].principal_id : ""
+    cluster_id  = module.aks[0] != null ? module.aks[0].cluster_id : ""
     depends_on = [
       module.aks
     ]
