@@ -1,0 +1,23 @@
+# general parameters
+namespace: devops
+# deployment parameters
+replicasCount: 1
+image:
+  name: app4
+  repository: devopsorient.azurecr.io/webpage8004
+  tag: latest
+  containerPort: 80
+resources:
+  memory: "256Mi"
+  cpu: "0.1"
+env:
+  valueMessage: "App 4 "
+  valuePort: "80"
+  secret: mysecret
+# service parameters
+service:
+  protocol: TCP
+  portExpose: 80
+  portTarget: 80
+  
+serviceAccountName: service-account-1

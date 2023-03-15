@@ -37,9 +37,9 @@ stages:
                         packer init linux-docker.pkr.hcl
                         packer validate linux-docker.pkr.hcl
                   env:
-                    PKR_VAR_render_image_name: $(render_image_name)
-                    PKR_VAR_resource_group_name: $(resource_group_name)
-                    PKR_VAR_build_resource_group_name: $(build_resource_group_name)
+                    PKR_VAR_render_image_name: $(renderImageName)
+                    PKR_VAR_resource_group_name: $(resourceGroup)
+                    PKR_VAR_build_resource_group_name: $(buildResourceGroupName)
     
     - stage: build_for_packer
       dependsOn: [validate_for_packer]
@@ -54,6 +54,6 @@ stages:
                       script: |
                         packer build -force linux-docker.pkr.hcl
                   env:
-                    PKR_VAR_render_image_name: $(render_image_name)
-                    PKR_VAR_resource_group_name: $(resource_group_name)
-                    PKR_VAR_build_resource_group_name: $(build_resource_group_name)
+                    PKR_VAR_render_image_name: $(renderImageName)
+                    PKR_VAR_resource_group_name: $(resourceGroup)
+                    PKR_VAR_build_resource_group_name: $(buildResourceGroupName)

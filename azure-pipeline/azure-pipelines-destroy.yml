@@ -1,12 +1,12 @@
 trigger: none
 
-pool: 
+pool:
   name: linuxAgent
 
 stages:
-  - stage: terraform_destroy
-    jobs: 
-      - job: terraform_destroy
+  - stage: terraform_plan
+    jobs:
+      - job: terraform_plan
         steps:
           - task: CmdLine@2
             inputs:
@@ -17,35 +17,106 @@ stages:
 
           - task: TerraformInstaller@0
             inputs:
-              terraformVersion: 'latest'
+              terraformVersion: "latest"
 
           - task: TerraformTaskV3@3
-            displayName: 'Terraform Init'
+            displayName: "Terraform Init"
             inputs:
-              provider: 'azurerm'
-              command: 'init'
-              commandOptions: '-force-copy'
+              provider: "azurerm"
+              command: "init"
+              commandOptions: "-force-copy"
               workingDirectory: $(workingDirectory)
               backendServiceArm: $(serviceConnection)
               backendAzureRmResourceGroupName: $(resourceGroup)
               backendAzureRmStorageAccountName: $(storageAccount)
-              backendAzureRmContainerName:  $(storageContainer)
+              backendAzureRmContainerName: $(storageContainer)
               backendAzureRmKey: $(storageKey)
-              
+
           - task: TerraformTaskV3@3
-            displayName: Terraform Destroy
+            displayName: Terraform Validate
             inputs:
-              provider: 'azurerm'
-              command: 'destroy'
-              commandOptions: '-auto-approve'
+              provider: "azurerm"
+              command: "validate"
+              workingDirectory: $(workingDirectory)
+
+          - task: TerraformTaskV3@3
+            displayName: Terraform Plan
+            inputs:
+              provider: "azurerm"
+              command: "plan"
+              commandOptions: "-destroy"
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
-              TF_VAR_resource_group_root_name: $(resource_group_root_name)
-              TF_VAR_resource_group_name: $(resource_group_name)   
-              TF_VAR_container_registry_name: $(container_registry_name)
-              TF_VAR_source_image_name: $(source_image_name)   
-              TF_VAR_ssh_public_key_name: $(ssh_public_key_name)    
-              TF_VAR_allowed_ips: $(allowed_ips)
-  
+              TF_VAR_resource_group_root_name: $(resourceGroup)
+              TF_VAR_resource_group_name: $(resourceGroupDev)
+              TF_VAR_container_registry_name: $(containerRegistry)
+              TF_VAR_address_space: $(addressSpace)
+              TF_VAR_address_prefixes: $(addressPrefixes)
+              TF_VAR_storage_account_name: $(storageAccount)
+              TF_VAR_condition_variable: $(conditionVariable)
+              TF_VAR_number_of_uppercase_characters: $(uppercaseCharacters)
+              TF_VAR_number_of_special_characters: $(specialCharacters)
+              TF_VAR_length_of_username: $(lengthofUsername)
+              TF_VAR_length_of_password: $(lengthofPassword)
+              TF_VAR_overide_special: $(overideSpecial)
+              TF_VAR_email_alert: $(emailAlert)
+              TF_VAR_allowed_ips: $(allowedIPs)
 
+  - stage: terraform_destroy
+    dependsOn: [terraform_plan]
+    condition: succeeded('terraform_plan')
+    jobs:
+      - deployment: terraform_destroy
+        environment: $(environmentName)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: CmdLine@2
+                  inputs:
+                    script: |
+                      export TF_LOG=DEBUG   
+                      sudo apt install unzip -y
+                      az login --identity
+
+                - task: TerraformInstaller@0
+                  inputs:
+                    terraformVersion: "latest"
+
+                - task: TerraformTaskV3@3
+                  displayName: "Terraform Init"
+                  inputs:
+                    provider: "azurerm"
+                    command: "init"
+                    commandOptions: "-force-copy"
+                    workingDirectory: $(workingDirectory)
+                    backendServiceArm: $(serviceConnection)
+                    backendAzureRmResourceGroupName: $(resourceGroup)
+                    backendAzureRmStorageAccountName: $(storageAccount)
+                    backendAzureRmContainerName: $(storageContainer)
+                    backendAzureRmKey: $(storageKey)
+
+                - task: TerraformTaskV3@3
+                  displayName: Terraform Destroy
+                  inputs:
+                    provider: "azurerm"
+                    command: "destroy"
+                    commandOptions: "-auto-approve"
+                    workingDirectory: $(workingDirectory)
+                    environmentServiceNameAzureRM: $(serviceConnection)
+                  env:
+                    TF_VAR_resource_group_root_name: $(resourceGroup)
+                    TF_VAR_resource_group_name: $(resourceGroupDev)
+                    TF_VAR_container_registry_name: $(containerRegistry)
+                    TF_VAR_address_space: $(addressSpace)
+                    TF_VAR_address_prefixes: $(addressPrefixes)
+                    TF_VAR_storage_account_name: $(storageAccount)
+                    TF_VAR_condition_variable: $(conditionVariable)
+                    TF_VAR_number_of_uppercase_characters: $(uppercaseCharacters)
+                    TF_VAR_number_of_special_characters: $(specialCharacters)
+                    TF_VAR_length_of_username: $(lengthofUsername)
+                    TF_VAR_length_of_password: $(lengthofPassword)
+                    TF_VAR_overide_special: $(overideSpecial)
+                    TF_VAR_email_alert: $(emailAlert)
+                    TF_VAR_allowed_ips: $(allowedIPs)

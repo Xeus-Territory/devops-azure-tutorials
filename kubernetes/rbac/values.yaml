@@ -1,0 +1,8 @@
+namespace: devops
+
+roleName: role-secret
+
+roleBindingName: role-binding-secret
+
+serviceAccountName: service-account-1
+  

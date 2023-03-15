@@ -1,0 +1,12 @@
+# general parameters
+namespace: devops
+# ingress parameters
+spec:
+  ingressClassName: nginx
+  rules:
+    routeType: Prefix
+    path: "/"
+  service:
+    name: web-server 
+    port: 80
+

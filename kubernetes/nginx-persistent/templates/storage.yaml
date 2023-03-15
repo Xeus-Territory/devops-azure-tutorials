@@ -1,0 +1,22 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+provisioner: file.csi.azure.com
+metadata:
+  name: {{ .Values.storageClass.name }}
+  namespace: {{ .Values.namespace }}
+allowVolumeExpansion: true
+parameters:
+  skuName: Standard_LRS
+  resourceGroup: {{ .Values.storageClass.parameters.resourceGroup }}
+  storageAccount: {{ .Values.storageClass.parameters.storageAccount }}
+  shareName: {{ .Values.storageClass.parameters.shareName }}
+reclaimPolicy: Retain
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=0
+  - gid=0
+  - mfsymlinks
+  - cache=strict
+  - nosharesock 
+  - actimeo=30 

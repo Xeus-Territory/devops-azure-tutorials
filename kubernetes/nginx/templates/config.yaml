@@ -1,0 +1,39 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  default.conf: |
+    upstream alb {
+    server {{ .Values.config.data.app1.name }}:{{ .Values.config.data.app1.port }};
+    server {{ .Values.config.data.app2.name }}:{{ .Values.config.data.app2.port }};
+    }
+    server {
+      listen 80 default_server;
+      server_name _;
+
+      location / {
+        return 404;
+      }
+
+      location /original {
+        proxy_pass http://alb;
+      }
+
+      location /v1 {
+        return 307 /original;
+      }
+
+      location /v2 {
+        return 307 /original;
+      }
+
+      location /v3 {
+        proxy_pass http://{{ .Values.config.data.app3.name }}:{{ .Values.config.data.app3.port }};
+      }
+
+      location /v4 {
+        proxy_pass http://{{ .Values.config.data.app4.name }}:{{ .Values.config.data.app4.port }};
+      }
+    }

@@ -20,7 +20,7 @@ stages:
               terraformVersion: "latest"
 
           - task: TerraformTaskV3@3
-            displayName: "Terraform Init"
+            displayName: "Terraform init"
             inputs:
               provider: "azurerm"
               command: "init"
@@ -46,20 +46,8 @@ stages:
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
-              TF_VAR_resource_group_root_name: $(resourceGroup)
-              TF_VAR_resource_group_name: $(resourceGroupDev)
-              TF_VAR_container_registry_name: $(containerRegistry)
-              TF_VAR_address_space: $(addressSpace)
-              TF_VAR_address_prefixes: $(addressPrefixes)
-              TF_VAR_storage_account_name: $(storageAccount)
-              TF_VAR_condition_variable: $(conditionVariable)
-              TF_VAR_number_of_uppercase_characters: $(uppercaseCharacters)
-              TF_VAR_number_of_special_characters: $(specialCharacters)
-              TF_VAR_length_of_username: $(lengthofUsername)
-              TF_VAR_length_of_password: $(lengthofPassword)
-              TF_VAR_overide_special: $(overideSpecial)
-              TF_VAR_email_alert: $(emailAlert)
-              TF_VAR_allowed_ips: $(allowedIPs)
+              TF_VAR_namespace_deployment: $(namespaceDeployment)
+              TF_VAR_namespace_ingress: $(namespaceIngress)
 
   - stage: terraform_apply
     dependsOn: [terraform_plan]
@@ -96,17 +84,5 @@ stages:
                     workingDirectory: $(workingDirectory)
                     environmentServiceNameAzureRM: $(serviceConnection)
                   env:
-                    TF_VAR_resource_group_root_name: $(resourceGroup)
-                    TF_VAR_resource_group_name: $(resourceGroupDev)
-                    TF_VAR_container_registry_name: $(containerRegistry)
-                    TF_VAR_address_space: $(addressSpace)
-                    TF_VAR_address_prefixes: $(addressPrefixes)
-                    TF_VAR_storage_account_name: $(storageAccount)
-                    TF_VAR_condition_variable: $(conditionVariable)
-                    TF_VAR_number_of_uppercase_characters: $(uppercaseCharacters)
-                    TF_VAR_number_of_special_characters: $(specialCharacters)
-                    TF_VAR_length_of_username: $(lengthofUsername)
-                    TF_VAR_length_of_password: $(lengthofPassword)
-                    TF_VAR_overide_special: $(overideSpecial)
-                    TF_VAR_email_alert: $(emailAlert)
-                    TF_VAR_allowed_ips: $(allowedIPs)
+                    TF_VAR_namespace_deployment: $(namespaceDeployment)
+                    TF_VAR_namespace_ingress: $(namespaceIngress)

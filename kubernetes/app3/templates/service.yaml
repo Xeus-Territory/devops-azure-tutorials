@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+  type: ClusterIP
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+  - name: {{ .Values.image.name }}
+    protocol: {{ .Values.service.protocol }}
+    port: {{ .Values.service.portExpose }}
+    targetPort: {{ .Values.service.portTarget }}

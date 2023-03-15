@@ -1,0 +1,3 @@
+FROM nginx:1.23.3
+
+COPY ./conf/nginx-k8s.conf /etc/nginx/nginx.conf
