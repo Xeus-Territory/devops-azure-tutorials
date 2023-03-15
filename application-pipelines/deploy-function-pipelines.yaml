@@ -16,7 +16,7 @@ stages:
         condition: succeeded('update_agent')
         steps:
           - script: |
-              wget -O -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+              wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
               sudo apt install ./packages-microsoft-prod.deb
   - stage: publish_function
     displayName: Authentication Azure and Publish Function
