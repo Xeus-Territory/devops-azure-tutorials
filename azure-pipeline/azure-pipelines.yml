@@ -59,6 +59,7 @@ stages:
               TF_VAR_length_of_password: $(lengthofPassword)
               TF_VAR_overide_special: $(overideSpecial)
               TF_VAR_email_alert: $(emailAlert)
+              TF_VAR_allowed_ips: $(allowedIPs)
 
   - stage: terraform_apply
     dependsOn: [terraform_plan]
@@ -108,3 +109,4 @@ stages:
                     TF_VAR_length_of_password: $(lengthofPassword)
                     TF_VAR_overide_special: $(overideSpecial)
                     TF_VAR_email_alert: $(emailAlert)
+                    TF_VAR_allowed_ips: $(allowedIPs)
