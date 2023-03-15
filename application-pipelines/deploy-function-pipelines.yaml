@@ -1,0 +1,48 @@
+trigger: none
+
+pool: linuxAgent
+
+stages:
+  - stage: install_az_function_tools
+    displayName: Install Azure Funtion Tool
+    jobs:
+      - job: update_agent
+        displayName: Update Package for Agent
+        steps:
+          - script: sudo apt update
+      - job: install_az_function_tools
+        displayName: Install Azure Funtion Tool Package
+        dependsOn: ['update_agent']
+        condition: succeeded('update_agent')
+        steps:
+          - script: |
+              wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+              sudo apt install ./packages-microsoft-prod.deb
+              sudo apt-get update
+              sudo apt-get install azure-functions-core-tools-4 -y
+  - stage: publish_function
+    displayName: Authentication Azure and Publish Function
+    dependsOn: ['install_az_function_tools']
+    condition: succeeded('install_az_function_tools')
+    jobs:
+      - job: authen_az_cli
+        displayName: Authentication for Azure CLI
+        steps:
+          - script: az login --identity
+      - job: validate_func_tool
+        displayName: Validate Func Tool Version
+        dependsOn: ['authen_az_cli']
+        condition: succeeded('authen_az_cli')
+        steps:
+          - script: func --version
+      - job: publish_function
+        displayName: Publish Function into Azure
+        dependsOn: ['validate_func_tool']
+        condition: succeeded('validate_func_tool')
+        steps:
+          - script: |
+              cd $(workingDirectory) || exit
+              func azure functionapp publish $(nameServerless)
+              func azure functionapp list-functions $$(nameServerless)
+
+        
