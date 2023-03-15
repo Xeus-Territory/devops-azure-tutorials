@@ -1,5 +1,6 @@
 # # Move the azure for new resource 
 resource "azurerm_resource_group" "main" {
+  count = ((var.condition_variable == "aks") || (var.condition_variable == "serverless")) ? 1 : 0
   name        = var.resource_group_name
   location    = var.resource_group_location
   tags        = var.tags
